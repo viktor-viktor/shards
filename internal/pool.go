@@ -96,11 +96,12 @@ func worker(shardId int, messages <-chan event, done chan<- workerStoppedSignal,
 	channelClosed := false
 	workerId := uuid.New().String()
 	defer func() {
+		db.archiveWorker(workerData{Id: workerId})
 		done <- workerStoppedSignal{channelClosed: channelClosed}
 		fmt.Println("Worker is finished. ", shardId, workerId)
 	}()
 
-	db.saveWorker(workerData{Id: workerId, ShardId: shardId})
+	db.createWorker(workerData{Id: workerId, ShardId: shardId})
 	batch := make([]event, 0)
 	run := true
 

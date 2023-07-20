@@ -14,8 +14,12 @@ type dalMocked struct {
 	err     error
 }
 
-func (d *dalMocked) saveWorker(data workerData) error {
+func (d *dalMocked) createWorker(data workerData) error {
 	d.workers = append(d.workers, data)
+	return d.err
+}
+
+func (d *dalMocked) archiveWorker(data workerData) error {
 	return d.err
 }
 

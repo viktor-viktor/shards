@@ -11,7 +11,8 @@ import (
 
 // dal represents a data access layer. Implemented for mongodb only
 type dal interface {
-	saveWorker(workerData) error
+	createWorker(workerData) error
+	archiveWorker(data workerData) error
 	saveEvent(eventsBatch) error
 	getAllWorkers() ([]workerData, error)
 	getWorker(string) (workerData, error)
@@ -50,12 +51,33 @@ func (dal *mongoDBDAL) Close(ctx context.Context) error {
 }
 
 // saveWorker saves worker data to the "workers" collection.
-func (dal *mongoDBDAL) saveWorker(data workerData) error {
+func (dal *mongoDBDAL) createWorker(data workerData) error {
 	data.CreatedAt = time.Now()
 	_, err := dal.workersColl.InsertOne(context.Background(), data)
 	if err != nil {
 		fmt.Println("Error saving worker:", err)
 		return err
+	}
+
+	return nil
+}
+
+// archiveWorker updates FinishedAt field of a worker
+func (dal *mongoDBDAL) archiveWorker(data workerData) error {
+	filter := bson.D{{"id", data.Id}}
+	update := bson.D{
+		{"$set", bson.D{{"FinishedAt", time.Now()}}},
+	}
+
+	result, err := dal.workersColl.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Println("Error updating worker FinishedAt:", err)
+		return err
+	}
+
+	// Check if any document was modified.
+	if result.ModifiedCount == 0 {
+		return fmt.Errorf("no worker document found with ID: %s", data.Id)
 	}
 
 	return nil

@@ -4,10 +4,11 @@ import "time"
 
 // workerData keeps track of worker history
 type workerData struct {
-	Id          string    `json:"id"`
-	ShardId     int       `json:"shard_id"`
-	EventsCount int       `json:"events_count"`
-	CreatedAt   time.Time `json:"created_at"`
+	Id          string     `json:"id"`
+	ShardId     int        `json:"shard_id"`
+	EventsCount int        `json:"events_count"`
+	CreatedAt   time.Time  `json:"created_at"`
+	FinishedAt  *time.Time `json:"finished_at,omitempty"`
 }
 
 // event represents an input data to the endpoints
