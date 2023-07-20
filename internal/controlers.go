@@ -39,7 +39,14 @@ func BuildEventsController(p iPoolEntry) func(*gin.Context) {
 func BuildWorkersController(db dal) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		fmt.Println("workers controller")
-		workers := db.getAllWorkers()
+		workers, err := db.getAllWorkers()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"Error": err,
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"workers": workers,
 		})
@@ -58,7 +65,14 @@ func BuildSingleWorkerController(db dal) func(c *gin.Context) {
 			return
 		}
 
-		wd := db.getWorker(Id)
+		wd, err := db.getWorker(Id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"Error": err,
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"workerData": wd,
 		})

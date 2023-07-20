@@ -10,25 +10,28 @@ import (
 type dalMocked struct {
 	workers []workerData
 	events  []eventsBatch
+	err     error
 }
 
-func (d *dalMocked) saveWorker(data workerData) {
+func (d *dalMocked) saveWorker(data workerData) error {
 	d.workers = append(d.workers, data)
+	return d.err
 }
 
-func (d *dalMocked) saveEvent(batch eventsBatch) {
+func (d *dalMocked) saveEvent(batch eventsBatch) error {
 	d.events = append(d.events, batch)
+	return d.err
 }
 
-func (d dalMocked) getAllWorkers() []workerData {
-	return d.workers
+func (d dalMocked) getAllWorkers() ([]workerData, error) {
+	return d.workers, d.err
 }
 
-func (d dalMocked) getWorker(i int) workerData {
+func (d dalMocked) getWorker(i int) (workerData, error) {
 	if len(d.workers) > 0 {
-		return d.workers[0]
+		return d.workers[0], d.err
 	}
-	return workerData{}
+	return workerData{}, d.err
 }
 
 func TestStartPools(t *testing.T) {

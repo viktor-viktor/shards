@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -58,6 +59,87 @@ func TestEventsController(t *testing.T) {
 			mockPool := &mockedPoolEntry{}
 			BuildEventsController(mockPool)(ctx)
 			assert.Equal(t, v.expectedStatus, ctx.Writer.Status(), "unexpected status code received")
+		})
+	}
+}
+
+func TestBuildWorkersController(t *testing.T) {
+	testData := []struct {
+		name           string
+		workers        []workerData
+		err            error
+		expectedStatus int
+	}{
+		{
+			name:           "should return 400 when dal returns error",
+			err:            fmt.Errorf("error"),
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "should return 200 when dal doesn't return error",
+			err:            nil,
+			workers:        []workerData{{Id: 123, EventsCount: 321}},
+			expectedStatus: http.StatusOK,
+		},
+	}
+
+	for _, v := range testData {
+		t.Run(v.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+
+			mockedDB := &dalMocked{workers: v.workers, err: v.err}
+			BuildWorkersController(mockedDB)(ctx)
+			assert.Equal(t, v.expectedStatus, ctx.Writer.Status(), "unexpected status code received")
+		})
+	}
+}
+
+func TestBuildSingleWorkerController(t *testing.T) {
+	testData := []struct {
+		name           string
+		paramId        string
+		workers        []workerData
+		err            error
+		expectedStatus int
+	}{
+		{
+			name:           "Should return 400 when param isn't int",
+			paramId:        "wow",
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "should return 400 when dal returns error",
+			paramId:        "123",
+			err:            fmt.Errorf("error"),
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "should return 200 when dal doesn't return error",
+			paramId:        "123",
+			err:            nil,
+			workers:        []workerData{{Id: 123, EventsCount: 321}},
+			expectedStatus: http.StatusOK,
+		},
+	}
+
+	for _, v := range testData {
+		t.Run(v.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			r := gin.Default()
+
+			mockedDB := &dalMocked{workers: v.workers, err: v.err}
+			r.GET("/workers/:id", BuildSingleWorkerController(mockedDB))
+
+			url := fmt.Sprintf("/workers/%v", v.paramId)
+			req, err := http.NewRequest("GET", url, nil)
+			if err != nil {
+				t.Fatal("Error creating request:", err)
+			}
+
+			r.ServeHTTP(w, req)
+
+			assert.Equal(t, v.expectedStatus, w.Code, "unexpected status code received")
 		})
 	}
 }

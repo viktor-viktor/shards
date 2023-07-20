@@ -65,6 +65,7 @@ func (dal *mongoDBDAL) saveEvent(batch eventsBatch) error {
 	_, err := dal.eventsBatchColl.InsertOne(context.Background(), batch)
 	if err != nil {
 		fmt.Println("Error saving event:", err)
+		return err
 	}
 
 	// Update the "eventsCount" in the "workers" collection for the corresponding workerID
@@ -73,17 +74,20 @@ func (dal *mongoDBDAL) saveEvent(batch eventsBatch) error {
 	_, err = dal.workersColl.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		fmt.Println("Error updating worker's eventsCount:", err)
+		return err
 	}
+
+	return nil
 }
 
 // getAllWorkers gets all workers from the "workers" collection.
-func (dal *mongoDBDAL) getAllWorkers() []workerData {
+func (dal *mongoDBDAL) getAllWorkers() ([]workerData, error) {
 	var workers []workerData
 
 	cursor, err := dal.workersColl.Find(context.Background(), bson.D{})
 	if err != nil {
 		fmt.Println("Error fetching workers:", err)
-		return workers
+		return nil, err
 	}
 	defer cursor.Close(context.Background())
 
@@ -91,6 +95,7 @@ func (dal *mongoDBDAL) getAllWorkers() []workerData {
 		var worker workerData
 		if err := cursor.Decode(&worker); err != nil {
 			fmt.Println("Error decoding worker:", err)
+			return nil, err
 		} else {
 			workers = append(workers, worker)
 		}
@@ -98,21 +103,22 @@ func (dal *mongoDBDAL) getAllWorkers() []workerData {
 
 	if err := cursor.Err(); err != nil {
 		fmt.Println("Cursor error:", err)
+		return nil, err
 	}
 
-	return workers
+	return workers, nil
 }
 
 // getWorker gets a worker from the "workers" collection by the provided workerID.
-func (dal *mongoDBDAL) getWorker(workerID int) workerData {
+func (dal *mongoDBDAL) getWorker(workerID int) (workerData, error) {
 	var worker workerData
 	filter := bson.D{{"id", workerID}}
 
 	err := dal.workersColl.FindOne(context.Background(), filter).Decode(&worker)
 	if err != nil {
 		fmt.Println("Error fetching worker:", err)
-		return worker
+		return worker, err
 	}
 
-	return worker
+	return worker, nil
 }

@@ -87,6 +87,11 @@ func newWorkerPool(sharId int, wg *sync.WaitGroup, db dal) chan event {
 	return messagesChan
 }
 
+// worker is the main unit of processing events.
+// it saves data about itself to the database and stars listening for events
+// until it either times out or events channel is closed
+// in both cases it sends workerStoppedSignal to the pool
+// events are saved in batches of 5 unless the worked is stopped than whatever exist is saved
 func worker(shardId int, messages <-chan event, done chan<- workerStoppedSignal, db dal) {
 	channelClosed := false
 	workerId := rand.Int()
@@ -121,6 +126,7 @@ func worker(shardId int, messages <-chan event, done chan<- workerStoppedSignal,
 	}
 }
 
+// shardNumber simply returns a number of a pool to use based on a timestamp.
 func shardNumber(e event) int {
 	unix := e.Timestamp.Unix()
 

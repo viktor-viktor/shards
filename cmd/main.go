@@ -40,6 +40,5 @@ func main() {
 	if err := srv.Shutdown(context.Background()); err != nil {
 		fmt.Println("Error when shutting down server. Error: ", err)
 	}
-
 	p.ShutdownPools()
 }
