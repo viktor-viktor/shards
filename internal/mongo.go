@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 // dal represents a data access layer. Implemented for mongodb only
@@ -49,8 +50,9 @@ func (dal *mongoDBDAL) Close(ctx context.Context) error {
 }
 
 // saveWorker saves worker data to the "workers" collection.
-func (dal *mongoDBDAL) saveWorker(workerData workerData) error {
-	_, err := dal.workersColl.InsertOne(context.Background(), workerData)
+func (dal *mongoDBDAL) saveWorker(data workerData) error {
+	data.CreatedAt = time.Now()
+	_, err := dal.workersColl.InsertOne(context.Background(), data)
 	if err != nil {
 		fmt.Println("Error saving worker:", err)
 		return err
