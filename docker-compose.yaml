@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    image: shards
+    container_name: shards
+    ports:
+      - "9753:9753"
+    depends_on:
+      mongo:
+        condition: service_started
+    environment:
+      MONGO_USER: user
+      MONGO_PWD: pwd
+      MONGO_ADDR: mongodb_local:27017
+      MONGO_DB_NAME: local
+      WORKERS_MAX: 3
+
+  mongo:
+    image: mongo
+    container_name: mongodb_local
+    ports:
+      - "27017:27017"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: pwd
