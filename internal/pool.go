@@ -2,7 +2,7 @@ package internal
 
 import (
 	"fmt"
-	"math/rand"
+	"github.com/google/uuid"
 	"sync"
 	"time"
 )
@@ -94,7 +94,7 @@ func newWorkerPool(sharId int, wg *sync.WaitGroup, db dal) chan event {
 // events are saved in batches of 5 unless the worked is stopped than whatever exist is saved
 func worker(shardId int, messages <-chan event, done chan<- workerStoppedSignal, db dal) {
 	channelClosed := false
-	workerId := rand.Int()
+	workerId := uuid.New().String()
 	defer func() {
 		done <- workerStoppedSignal{channelClosed: channelClosed}
 		fmt.Println("Worker is finished. ", shardId, workerId)

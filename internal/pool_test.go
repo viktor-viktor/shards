@@ -28,7 +28,7 @@ func (d dalMocked) getAllWorkers() ([]workerData, error) {
 	return d.workers, d.err
 }
 
-func (d dalMocked) getWorker(i int) (workerData, error) {
+func (d dalMocked) getWorker(string) (workerData, error) {
 	if len(d.workers) > 0 {
 		return d.workers[0], d.err
 	}

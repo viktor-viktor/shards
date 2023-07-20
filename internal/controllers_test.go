@@ -78,7 +78,7 @@ func TestBuildWorkersController(t *testing.T) {
 		{
 			name:           "should return 200 when dal doesn't return error",
 			err:            nil,
-			workers:        []workerData{{Id: 123, EventsCount: 321}},
+			workers:        []workerData{{Id: "123", EventsCount: 321}},
 			expectedStatus: http.StatusOK,
 		},
 	}
@@ -104,21 +104,23 @@ func TestBuildSingleWorkerController(t *testing.T) {
 		expectedStatus int
 	}{
 		{
-			name:           "Should return 400 when param isn't int",
-			paramId:        "wow",
-			expectedStatus: http.StatusBadRequest,
-		},
-		{
 			name:           "should return 400 when dal returns error",
 			paramId:        "123",
 			err:            fmt.Errorf("error"),
 			expectedStatus: http.StatusBadRequest,
 		},
 		{
+			name:           "should return 400 when dal returns error",
+			paramId:        "123",
+			err:            nil,
+			workers:        []workerData{{}},
+			expectedStatus: http.StatusNotFound,
+		},
+		{
 			name:           "should return 200 when dal doesn't return error",
 			paramId:        "123",
 			err:            nil,
-			workers:        []workerData{{Id: 123, EventsCount: 321}},
+			workers:        []workerData{{Id: "123", EventsCount: 321}},
 			expectedStatus: http.StatusOK,
 		},
 	}

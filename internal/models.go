@@ -4,7 +4,7 @@ import "time"
 
 // workerData keeps track of worker history
 type workerData struct {
-	Id          int       `json:"id"`
+	Id          string    `json:"id"`
 	ShardId     int       `json:"shard_id"`
 	EventsCount int       `json:"events_count"`
 	CreatedAt   time.Time `json:"created_at"`
@@ -18,6 +18,6 @@ type event struct {
 
 // eventBatch represents a piece of data that is being saved by a worker
 type eventsBatch struct {
-	WorkerId int     `json:"worker_id"`
+	WorkerId string  `json:"worker_id"`
 	Events   []event `json:"events"`
 }

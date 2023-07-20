@@ -3,11 +3,9 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
-	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
 
 // EventsController expects []events on the input and pushed them to respective pool to process
@@ -56,19 +54,18 @@ func BuildWorkersController(db dal) func(c *gin.Context) {
 // BuildSingleWorkerController initializes using provided dal and returns a controller searches for a single worker
 func BuildSingleWorkerController(db dal) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		strId := c.Param("id")
-		Id, err := strconv.Atoi(strId)
+		Id := c.Param("id")
+		wd, err := db.getWorker(Id)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"Error": fmt.Sprintf("invlaid worker id provided: %v", err),
+				"Error": fmt.Sprintf("Error when looking for an item: %v", err),
 			})
 			return
 		}
 
-		wd, err := db.getWorker(Id)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"Error": err,
+		if wd.Id == "" {
+			c.JSON(http.StatusNotFound, gin.H{
+				"Error": fmt.Sprintf("worker with such Id: %v isn't found", Id),
 			})
 			return
 		}

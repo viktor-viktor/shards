@@ -14,7 +14,7 @@ type dal interface {
 	saveWorker(workerData) error
 	saveEvent(eventsBatch) error
 	getAllWorkers() ([]workerData, error)
-	getWorker(int) (workerData, error)
+	getWorker(string) (workerData, error)
 }
 
 // mongoDBDAL is a struct representing the MongoDB Data Access Layer.
@@ -112,12 +112,15 @@ func (dal *mongoDBDAL) getAllWorkers() ([]workerData, error) {
 }
 
 // getWorker gets a worker from the "workers" collection by the provided workerID.
-func (dal *mongoDBDAL) getWorker(workerID int) (workerData, error) {
+func (dal *mongoDBDAL) getWorker(workerID string) (workerData, error) {
 	var worker workerData
 	filter := bson.D{{"id", workerID}}
 
 	err := dal.workersColl.FindOne(context.Background(), filter).Decode(&worker)
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return worker, nil
+		}
 		fmt.Println("Error fetching worker:", err)
 		return worker, err
 	}
