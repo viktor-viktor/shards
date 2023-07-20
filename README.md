@@ -39,7 +39,8 @@ Response looks like:
         {
             "id": 7965774568352684057,
             "shard_id": 0,
-            "events_count": 1775
+            "events_count": 1775,
+            "created_at": "2023-07-20T17:06:14.831Z"
         }
     ]
 }
@@ -52,7 +53,8 @@ Returns detailed data about one of the workers.
     "workerData": {
         "id": 7965774568352684057,
         "shard_id": 0,
-        "events_count": 1779
+        "events_count": 1779,
+        "created_at": "2023-07-20T17:06:14.831Z"
     }
 }
 ```
