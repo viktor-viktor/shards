@@ -16,6 +16,8 @@ services:
       MONGO_ADDR: mongodb_local:27017
       MONGO_DB_NAME: local
       WORKERS_MAX: 3
+      CERT_PATH: /app/cert.pem
+      KEY_PATH:
 
   mongo:
     image: mongo

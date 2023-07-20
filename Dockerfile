@@ -25,6 +25,7 @@ FROM alpine:3.14
 WORKDIR /app
 RUN apk update
 RUN apk add --no-cache bash
+COPY ./.local .
 
 COPY --from=build /app/main ./
 

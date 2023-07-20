@@ -6,6 +6,7 @@ echo "Starting mongo."
 docker-compose up -d mongo
 
 # Wait for MongoDB to be ready before executing the script inside the container
+# TODO poll mongo if it's ready
 sleep 5
 
 echo "Creating collections."

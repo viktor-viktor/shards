@@ -30,7 +30,15 @@ func main() {
 		Handler: router,
 	}
 	go func() {
-		srv.ListenAndServe()
+		if os.Getenv("CERT_PATH") != "" && os.Getenv("KEY_PATH") != "" {
+			if err := srv.ListenAndServeTLS(os.Getenv("CERT_PATH"), os.Getenv("KEY_PATH")); err != nil {
+				panic(fmt.Sprintf("\n\nError while starting server. \n", err.Error(), "\n\n"))
+			}
+		} else {
+			if err := srv.ListenAndServe(); err != nil {
+				panic(fmt.Sprintf("\n\nError while starting server. \n", err.Error(), "\n\n"))
+			}
+		}
 	}()
 
 	// graceful shutdown
