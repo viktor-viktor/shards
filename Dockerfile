@@ -27,6 +27,5 @@ RUN apk update
 RUN apk add --no-cache bash
 
 COPY --from=build /app/main ./
-#EXPOSE 8083
 
 CMD [ "/app/main" ]

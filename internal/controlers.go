@@ -3,10 +3,11 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 // EventsController expects []events on the input and pushed them to respective pool to process
@@ -38,7 +39,6 @@ func BuildEventsController(p iPoolEntry) func(*gin.Context) {
 // or finished, workers
 func BuildWorkersController(db dal) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		fmt.Println("workers controller")
 		workers, err := db.getAllWorkers()
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{

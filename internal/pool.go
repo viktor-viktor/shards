@@ -13,7 +13,7 @@ var (
 	workersAmount = getEnvInt("WORKERS_MAX", 3)
 )
 
-// iPoolEntry main purpose to provide a change of mocking pools
+// iPoolEntry main purpose to provide a chance of mocking pools
 // its main implementation - poolEntry
 type iPoolEntry interface {
 	ShutdownPools()

@@ -11,7 +11,7 @@ type workerData struct {
 
 // event represents an input data to the endpoints
 type event struct {
-	Timestamp time.Time   `json:"timestamp"`
+	Timestamp time.Time   `json:"timestamp,required"`
 	Data      interface{} `json:"data"`
 }
 

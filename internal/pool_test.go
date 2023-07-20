@@ -1,10 +1,11 @@
 package internal
 
 import (
-	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type dalMocked struct {

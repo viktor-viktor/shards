@@ -125,21 +125,22 @@ func TestBuildSingleWorkerController(t *testing.T) {
 
 	for _, v := range testData {
 		t.Run(v.name, func(t *testing.T) {
-			w := httptest.NewRecorder()
-			r := gin.Default()
+			writer := httptest.NewRecorder()
+			engine := gin.Default()
 
+			// register endpoint
 			mockedDB := &dalMocked{workers: v.workers, err: v.err}
-			r.GET("/workers/:id", BuildSingleWorkerController(mockedDB))
+			engine.GET("/workers/:id", BuildSingleWorkerController(mockedDB))
 
+			// mock request
 			url := fmt.Sprintf("/workers/%v", v.paramId)
 			req, err := http.NewRequest("GET", url, nil)
 			if err != nil {
 				t.Fatal("Error creating request:", err)
 			}
 
-			r.ServeHTTP(w, req)
-
-			assert.Equal(t, v.expectedStatus, w.Code, "unexpected status code received")
+			engine.ServeHTTP(writer, req)
+			assert.Equal(t, v.expectedStatus, writer.Code, "unexpected status code received")
 		})
 	}
 }
