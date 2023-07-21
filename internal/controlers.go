@@ -28,7 +28,9 @@ func BuildEventsController(p iPoolEntry) func(*gin.Context) {
 			return
 		}
 
-		p.Send(events)
+		singleShard := c.Query("single_shard")
+
+		p.Send(events, singleShard)
 		c.JSON(http.StatusOK, nil)
 	}
 }

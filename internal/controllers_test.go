@@ -17,9 +17,11 @@ type mockedPoolEntry struct {
 	events []event
 }
 
+var _ iPoolEntry = &mockedPoolEntry{}
+
 func (mockedPoolEntry) ShutdownPools() {}
 
-func (m *mockedPoolEntry) Send(events []event) {
+func (m *mockedPoolEntry) Send(events []event, singalShard string) {
 	m.events = append(m.events, events...)
 }
 
@@ -51,14 +53,22 @@ func TestEventsController(t *testing.T) {
 
 	for _, v := range testData {
 		t.Run(v.name, func(t *testing.T) {
-			// Create a test context with a mock request and response
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = &http.Request{Body: v.body}
+			writer := httptest.NewRecorder()
+			engine := gin.Default()
 
+			// register endpoint
 			mockPool := &mockedPoolEntry{}
-			BuildEventsController(mockPool)(ctx)
-			assert.Equal(t, v.expectedStatus, ctx.Writer.Status(), "unexpected status code received")
+			engine.POST("/events", BuildEventsController(mockPool))
+
+			// mock request
+			url := fmt.Sprintf("/events")
+			req, err := http.NewRequest("POST", url, v.body)
+			if err != nil {
+				t.Fatal("Error creating request:", err)
+			}
+
+			engine.ServeHTTP(writer, req)
+			assert.Equal(t, v.expectedStatus, writer.Code, "unexpected status code received")
 		})
 	}
 }

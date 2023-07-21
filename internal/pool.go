@@ -17,7 +17,7 @@ var (
 // its main implementation - poolEntry
 type iPoolEntry interface {
 	ShutdownPools()
-	Send([]event)
+	Send([]event, string)
 }
 
 // poolEntry implements iPoolEntry
@@ -31,6 +31,9 @@ type poolEntry struct {
 type workerStoppedSignal struct {
 	channelClosed bool
 }
+
+// ensure interface
+var _ iPoolEntry = &poolEntry{}
 
 // StartPools start 5 pools on the server start
 func StartPools(db dal) iPoolEntry {
@@ -52,10 +55,17 @@ func (p poolEntry) ShutdownPools() {
 	p.wg.Wait()
 }
 
-func (poolEntry) Send(events []event) {
-	for _, e := range events {
-		number := shardNumber(e)
-		shards[number] <- e
+func (poolEntry) Send(events []event, singleShard string) {
+	if singleShard != "true" {
+		for _, e := range events {
+			number := shardNumber(e)
+			shards[number] <- e
+		}
+	} else {
+		number := shardNumber(event{Timestamp: time.Now()})
+		for _, e := range events {
+			shards[number] <- e
+		}
 	}
 }
 
