@@ -32,11 +32,11 @@ func main() {
 	go func() {
 		if os.Getenv("CERT_PATH") != "" && os.Getenv("KEY_PATH") != "" {
 			if err := srv.ListenAndServeTLS(os.Getenv("CERT_PATH"), os.Getenv("KEY_PATH")); err != nil {
-				panic(fmt.Sprintf("\n\nError while starting server. \n", err.Error(), "\n\n"))
+				panic(fmt.Sprintf("\n\nError while starting server. \n%v\n\n", err.Error()))
 			}
 		} else {
 			if err := srv.ListenAndServe(); err != nil {
-				panic(fmt.Sprintf("\n\nError while starting server. \n", err.Error(), "\n\n"))
+				panic(fmt.Sprintf("\n\nError while starting server. \n%v\n\n", err.Error()))
 			}
 		}
 	}()

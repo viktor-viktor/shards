@@ -1,6 +1,5 @@
 #!/bin/bash
 go test -coverprofile=c.out ./...
-# change that to be command dependent
 go tool cover -html=c.out -o=c.html
 
 verbose=false
