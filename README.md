@@ -85,3 +85,4 @@ on infrastructure/cloud level thus aren't added here.
    - added graceful shutdown with minimizing data loss.
    - added scripts for easier tests and local setup.
    - added time fields to the workers to better visualize their history.
+ 
